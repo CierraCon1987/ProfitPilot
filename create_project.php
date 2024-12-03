@@ -1,32 +1,41 @@
 <!-- Cierra Bailey-Rice (8998948)
      Harpreet Kaur (8893116)
      Gurkamal Singh () -->
+     
+     <?php
+session_start();
 
-<?php
+if (!isset($_SESSION['user_id'])) {
+    // Redirect if the user is not logged in
+    header("Location: login.php");
+    exit();
+}
 
-    include('db_connection.php');
-    session_start();
+include('db_connection.php');
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $project_name = htmlspecialchars($_POST['project_name']);
 
-        $project_name = $_POST['project_name'];
-        $client_id = $_POST['client_id']; 
-
-        // Insert Project Data into DB
-        $stmt = $pdo->prepare("INSERT INTO Projects (project_id, user_id, project_name, client_id) VALUES (?, ?, ?, ?)");
-        $stmt->execute([uniqid('PROJ-'), $_SESSION['user_id'], $project_name, $client_id]);
-
-        // Redirect to dashboard
-        header("Location: dashboard.php");
+    // Ensure user_id is set in the session
+    if (!isset($_SESSION['user_id'])) {
+        echo "Error: user_id is not set in the session.";
         exit();
     }
 
-    // Fetch clients for dropdown
-    $stmt = $pdo->prepare("SELECT * FROM Clients");
-    $stmt->execute();
-    $clients = $stmt->fetchAll();
+    try {
+        // Adjust SQL query to match your database schema
+        $stmt = $pdo->prepare("INSERT INTO Projects (user_id, project_name) VALUES (?, ?)");
+        $stmt->execute([$_SESSION['user_id'], $project_name]);
 
+        // Redirect to dashboard after successful creation
+        header("Location: dashboard.php");
+        exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
 ?>
+
 
 
 <!DOCTYPE html>

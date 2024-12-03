@@ -5,12 +5,12 @@
 <?php
 
     include('db_connection.php');
-    session_start();
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
-        exit();
-    }
 
     // Projects related to the logged-in user
     $stmt = $pdo->prepare("SELECT * FROM Projects WHERE user_id = ?");
@@ -28,13 +28,18 @@
 </head>
 
 <body>
+    <header>
     <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
+    <a href="logout.php">Logout</a>
+</header>
+<main>
     <h2>Your Projects</h2>
     <ul>
         <?php foreach ($projects as $project): ?>
             <li><?php echo htmlspecialchars($project['project_name']); ?></li>
         <?php endforeach; ?>
     </ul>
+        </main>
 </body>
 
 </html>

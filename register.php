@@ -7,37 +7,38 @@
     include('db_connection.php');
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
         $first_name = htmlspecialchars($_POST['first_name']);
         $last_name = htmlspecialchars($_POST['last_name']);
         $username = htmlspecialchars($_POST['username']);
         $email = htmlspecialchars($_POST['email']);
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-        if (empty($first_name) || empty($last_name) || empty($username) || empty($email) || empty($password)) {
-            $error = "All fields are required!";
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = "Invalid email format!";
-        } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $password = $_POST['password'];
     
-        // Generates a unique UserID without AUTOINC
-        $user_id = uniqid('USER-');
-
-
-        // Insert User Info into DB
-        try {
-            $stmt = $pdo->prepare("INSERT INTO Users (user_id, first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$user_id, $first_name, $last_name, $username, $email, $hashedPassword]);
-
-            // Redirect to login page after successful registration
-            header("Location: login.php");
-            exit();
-        } catch (PDOException $e) {
-            $error = "Error registering user: " . $e->getMessage();
+        // Validate password complexity
+        if (!preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $password)) {
+            $error = "Password must be at least 8 characters long and include one uppercase letter, one number, and one special character.";
+        }
+    
+        // Check for duplicate email/username
+        $stmt = $pdo->prepare("SELECT * FROM Users WHERE email = ? OR username = ?");
+        $stmt->execute([$email, $username]);
+        if ($stmt->fetch()) {
+            $error = "Email or username already exists!";
+        }
+    
+        if (!isset($error)) {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $user_id = uniqid('USER-');
+    
+            try {
+                $stmt = $pdo->prepare("INSERT INTO Users (user_id, first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$user_id, $first_name, $last_name, $username, $email, $hashedPassword]);
+                header("Location: login.php");
+                exit();
+            } catch (PDOException $e) {
+                $error = "Error registering user: " . $e->getMessage();
+            }
         }
     }
-}
 
 ?>
 

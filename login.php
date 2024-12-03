@@ -8,44 +8,25 @@
     include('db_connection.php');
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-        // Allow User to Login with Username or Email
-        $email_or_username = htmlspecialchars($_POST['email_or_username']);
+        $email_or_username = $_POST['email_or_username'];
         $password = $_POST['password'];
-
-        // Verify User Info
-        if (empty($email_or_username) || empty($password)) {
-            $error = "Please enter both email/username and password!";
+    
+        $stmt = $pdo->prepare("SELECT * FROM Users WHERE (email = ? OR username = ?)");
+        $stmt->execute([$email_or_username, $email_or_username]);
+        $user = $stmt->fetch();
+    
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['first_name'] = $user['first_name'];
+            $_SESSION['last_name'] = $user['last_name'];
+            $_SESSION['username'] = $user['username'];
+    
+            header("Location: dashboard.php");
+            exit();
         } else {
-            try {
-
-                $stmt = $pdo->prepare("SELECT * FROM Users WHERE email = ? OR username = ?");
-                $stmt->execute([$email_or_username, $email_or_username]);
-                $user = $stmt->fetch();
-
-                if ($user) {
-
-                    if (password_verify($password, $user['password'])) {
-
-                    $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['first_name'] = $user['first_name'];
-                    $_SESSION['last_name'] = $user['last_name'];
-                    $_SESSION['email'] = $user['email'];
-                    $_SESSION['username'] = $user['username'];
-
-                    header("Location: dashboard.php");
-                    exit();
-                } else {
-                    $error = "Invalid password!";
-                }
-            } else {
-                $error = "User not found!";
-            }
-        } catch (PDOException $e) {
-            $error = "Error logging in: " . $e->getMessage();
+            $error = "Invalid credentials.";
         }
     }
-}
 ?>
 
 <!DOCTYPE html>
