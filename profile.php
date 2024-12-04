@@ -67,6 +67,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProfitPilot | Profile</title>
+    <link rel="stylesheet" href="mainstyle.css">
 </head>
 
 <body>
@@ -83,7 +84,7 @@
             <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
         <?php if (!empty($success)): ?>
-            <p style="color: green;"><?php echo htmlspecialchars($success); ?></p>
+            <p style="color: yellow;"><?php echo htmlspecialchars($success); ?></p>
         <?php endif; ?>
 
         <form method="POST" action="profile.php">

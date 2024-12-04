@@ -43,31 +43,16 @@
 <head>
     <meta charset="UTF-8">
     <title> ProfitPilot | Dashboard</title>
+    <link rel="stylesheet" href="mainstyle.css">
 </head>
 
 <body>
     <header>
-<<<<<<< HEAD
-    <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
-    <a href="logout.php">Logout</a>
-    <a href="collect_data.php">client info</a>
-</header>
-<main>
-    <h2>Your Projects</h2>
-    <ul>
-        <?php foreach ($projects as $project): ?>
-            <li><?php echo htmlspecialchars($project['project_name']); ?></li>
-        <?php endforeach; ?>
-    </ul>
-        </main>
-</body>
-=======
     <h1>Welcome, <?php echo htmlspecialchars($_SESSION['first_name']); ?>!</h1>
->>>>>>> 11b789b65706373baa38e3a04a77f741a3216ec5
 
     <div id="admin">
-        <a href="profile.php">Profile</a>
-        <a href="logout.php">Logout</a>
+        <a href="profile.php" class="button">Profile</a>
+        <a href="logout.php"  class="button">Logout</a>
     </div>
 </header>
 
@@ -102,13 +87,13 @@
         </ul>
 
         <!-- Add New Project -->
-        <a href="add_project.php">Add New Project</a>
+        <a href="add_project.php"  class="button">Add New Project</a>
 
         <!-- Add New Client -->
-        <a href="add_client.php">Add New Client</a>
+        <a href="add_client.php"  class="button">Add New Client</a>
 
         <!-- View Clients -->
-        <a href="view_clients.php">View Your Clients</a>
+        <a href="view_clients.php"  class="button">View Your Clients</a>
 </main>
 
 </body>

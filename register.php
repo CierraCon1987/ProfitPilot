@@ -55,35 +55,36 @@
 </head>
 
 <body>
-    <h1>Create an Account</h1>
-
+    <header>
+    <h2>Create an Account</h2>
+</header>
     <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
 
     <form action="register.php" method="POST">
         <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name" required>
+        <input type="text" id="first_name" name="first_name">
         <br>
 
         <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" required>
+        <input type="text" id="last_name" name="last_name">
         <br>
         
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email">
         <br>
 
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username">
         <br>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" >
         <br>
 
         <input type="submit" value="Register">
     </form>
 
-    <p>Already have an account? <a href="login.php">Login here</a></p>
+    <p>Already have an account? <a href="login.php" class="button">Login here</a></p>
 
 </body>
 </html>

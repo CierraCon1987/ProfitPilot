@@ -41,7 +41,9 @@
 </head>
 
 <body>
-    <h1>Login</h1>
+    <header>
+    <h2>Login</h2>
+</header>
 
     <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
 
@@ -57,7 +59,7 @@
         <input type="submit" value="Login">
     </form>
 
-    <p>Don't have an account? <a href="register.php">Register here</a></p>
+    <p>Don't have an account? <a href="register.php" class="button">Register here</a></p>
 
 </body>
 </html>
