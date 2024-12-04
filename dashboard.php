@@ -31,6 +31,7 @@ if (!isset($_SESSION['user_id'])) {
     <header>
     <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
     <a href="logout.php">Logout</a>
+    <a href="collect_data.php">client info</a>
 </header>
 <main>
     <h2>Your Projects</h2>
