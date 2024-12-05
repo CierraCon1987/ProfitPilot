@@ -40,10 +40,14 @@
     <link rel="stylesheet" href="mainstyle.css">
 </head>
 
-<body>
-    <header>
+<header>
+        <h1>ProfitPilot</h1>
+        <a href="dashboard.php">Back to Dashboard</a>
+        <a href="logout.php" class="button">Logout</a>
+    </header>
+
     <h2>Login</h2>
-</header>
+
 
     <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
 

@@ -56,8 +56,9 @@
 
 <body>
     <header>
-    <h2>Create an Account</h2>
-</header>
+        <h2>Create an Account</h2>
+    </header>
+
     <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
 
     <form action="register.php" method="POST">

@@ -60,7 +60,7 @@ input[type="text"], input[type="email"], input[type="password"] {
     border: none;
     border-radius: 5px;
     font-size: 1rem;
-    background-color: rgba(255, 255, 255, 0.8); /* Light background for input fields */
+    background-color: rgba(255, 255, 255, 0.8); 
 }
 
 /* Submit Button */
@@ -81,8 +81,8 @@ input[type="submit"]:hover {
 
 /* Paragraph and Link Styling */
 header {
-    background-color: #003366; /* Deep Navy Blue */
-    color: #FFFFFF; /* White Text */
+    background-color: #003366; 
+    color: #FFFFFF; 
     padding: 20px;
     text-align: center;
 }
@@ -96,7 +96,7 @@ header {
 }
 
 #admin a:hover {
-    color: #FFD700; /* Soft Gold */
+    color: #FFD700; 
 }
 
 /* Buttons */
@@ -111,7 +111,7 @@ button {
 }
 
 button:hover {
-    background-color: #218838; /* Darker Green */
+    background-color: #218838;
 }
 
 
@@ -126,7 +126,7 @@ ul li {
 
 ul li strong {
     font-size: 1.2rem;
-    color: #003366; /* Deep Navy Blue */
+    color: #003366; 
 }
 table {
     width: 100%;
@@ -141,13 +141,13 @@ table th, table td {
 }
 
 table th {
-    background-color:#FF7F50; /* Deep Navy Blue */
+    background-color:#FF7F50; 
     color: #FFFFFF;
     font-size: 1.1rem;
 }
 
 table td {
-    background-color:rgba(0, 0, 0, 0.5);  /* Soft White */
+    background-color:rgba(0, 0, 0, 0.5);  
     font-size: 1rem;
 }
 
@@ -156,14 +156,14 @@ table tr:nth-child(even) td {
 }
 
 table a {
-    color: #FF7F50; /* Warm Coral */
+    color: #FF7F50; 
     text-decoration: none;
     margin-right: 10px;
     font-weight: bold;
 }
 
 table a:hover {
-    color: #FF4500; /* Darker Coral */
+    color: #FF4500; 
 }
 
 /* No Clients Found */
@@ -173,7 +173,7 @@ p {
 }
 
 p a {
-    color: #FF7F50; /* Emerald Green */
+    color: #FF7F50; 
     font-weight: bold;
 }
 
@@ -198,7 +198,7 @@ a:hover {
 }
 /* Footer */
 footer {
-    background-color: #003366; /* Deep Navy Blue */
+    background-color: #003366; 
     color: #FFFFFF;
     padding: 20px;
     text-align: center;

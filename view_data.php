@@ -1,3 +1,7 @@
+<!-- Cierra Bailey-Rice (8998948)
+     Harpreet Kaur (8893116)
+     Gurkamal Singh (9001186) -->
+
 <?php
 include('db_connection.php');
 session_start();
@@ -28,9 +32,26 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Projects</title>
+
+    <!-- Custom Styling -->
+    <link rel="stylesheet" href="mainstyle.css">
 </head>
 <body>
-    <h1>Your Projects</h1>
+
+    <header>
+        <div id="admin">
+            <h1>ProfitPilot</h1>
+            <div class="buttons">
+                <a href="dashboard.php" class="button">Dashboard</a>
+                <a href="add_client.php" class="button">Add Client</a>
+                <a href="logout.php" class="button">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>Your Projects</h2>
+
     <?php if (empty($projects)): ?>
         <p>No projects found!</p>
     <?php else: ?>
@@ -61,5 +82,6 @@ try {
             </tbody>
         </table>
     <?php endif; ?>
+    </main>
 </body>
 </html>

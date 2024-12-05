@@ -2,33 +2,34 @@
      Harpreet Kaur (8893116)
      Gurkamal Singh (9001186) -->
 
-     <?php
-        session_start();
-        include('db_connection.php');
+<?php
+    session_start();
+    include('db_connection.php');
 
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: login.php");
-            exit();
-        }
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit();
+    }
 
-        $user_id = $_SESSION['user_id'];
+    $user_id = $_SESSION['user_id'];
 
-        // Get all clients related to the logged-in user
+    // Search Feature
         $search = $_GET['search'] ?? '';
         $query = "
-        SELECT *,
-        address AS full_address
-    FROM Clients
-    WHERE user_id = ? OR user_id IS NULL
-    AND (client_name LIKE ? OR email LIKE ? OR address LIKE ?)
-";
+        SELECT client_id, client_name, phone_number, email, 
+            CONCAT(address_line1, ' ', address_line2, ' ', city, ' ', province, ' ', postal_code, ' ', country) AS full_address,
+            CONCAT(contact_first, ' ', contact_last) AS contact_name
+        FROM Clients
+        WHERE (user_id = ? OR user_id IS NULL)
+        AND (client_name LIKE ? OR email LIKE ? OR CONCAT(address_line1, ' ', address_line2, ' ', city, ' ', province, ' ', postal_code, ' ', country) LIKE ? OR CONCAT(contact_first, ' ', contact_last) LIKE ?)
+        ";
         $stmt = $pdo->prepare($query);
         $stmt->execute([
             $_SESSION['user_id'], 
-            "%$search%", "%$search%", "%$search%"
+            "%$search%", "%$search%", "%$search%","%$search%"
         ]);
         $clients = $stmt->fetchAll();
-    ?>
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,19 +37,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProfitPilot | View Clients</title>
+
+    <!-- Custom Styling -->
     <link rel="stylesheet" href="mainstyle.css">
 </head>
 
 <body>
+
     <header>
-        <h2>Manage Clients</h2>
-        <a href="dashboard.php" class="button">Back to Dashboard</a>
-        <a href="add_client.php" class="button">Add Client</a>
-        <a href="logout.php"class="button">Logout</a>
+        <div id="admin">
+            <h1>ProfitPilot</h1>
+            <div class="buttons">
+                <a href="dashboard.php" class="button">Dashboard</a>
+                <a href="add_client.php" class="button">Add Client</a>
+                <a href="logout.php" class="button">Logout</a>
+            </div>
+        </div>
     </header>
 
     <main>
-        <h2>Your Clients</h2>
+        <h2>Manage Your Clients</h2>
 
         <!-- Error Message Section -->
         <?php if (isset($error)): ?>
@@ -67,6 +75,7 @@
             <thead>
                 <tr>
                     <th>Client Name</th>
+                    <th>Contact Name</th>
                     <th>Phone</th>
                     <th>Email</th>
                     <th>Address</th>
@@ -77,6 +86,7 @@
                 <?php foreach ($clients as $client): ?>
                     <tr>
                     <td><?php echo htmlspecialchars($client['client_name']); ?></td>
+                    <td><?php echo htmlspecialchars($client['contact_name']); ?></td>
                     <td><?php echo htmlspecialchars($client['phone_number']); ?></td>
                     <td><?php echo htmlspecialchars($client['email']); ?></td>
                     <td><?php echo htmlspecialchars($client['full_address']); ?></td>

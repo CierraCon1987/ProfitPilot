@@ -67,24 +67,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProfitPilot | Profile</title>
+
+    <!-- Custom Styling -->
     <link rel="stylesheet" href="mainstyle.css">
 </head>
 
 <body>
-
-    <header>
-        <h1>Profile</h1>
-        <a href="dashboard.php">Back to Dashboard</a>
-        <a href="logout.php">Logout</a>
-    </header>
-
     <main>
-        <h2>Update Your Account Information</h2>
+
+        <header>
+            <div id="admin">
+                <h1>ProfitPilot</h1>
+                <div class="buttons">
+                    <a href="dashboard.php" class="button">Dashboard</a>
+                    <a href="logout.php" class="button">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <h2>Your Account Information</h2>
+        <p>Update Your Account Information</p>
+
         <?php if (!empty($error)): ?>
-            <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
+            <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
+        
         <?php if (!empty($success)): ?>
-            <p style="color: yellow;"><?php echo htmlspecialchars($success); ?></p>
+            <p class="success-message"><?php echo htmlspecialchars($success); ?></p>
         <?php endif; ?>
 
         <form method="POST" action="profile.php">
@@ -105,7 +114,7 @@
 
             <button type="submit">Update Profile</button>
         </form>
-    </main>
+</main>
 
 </body>
 </html>

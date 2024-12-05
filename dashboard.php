@@ -43,12 +43,14 @@
 <head>
     <meta charset="UTF-8">
     <title> ProfitPilot | Dashboard</title>
+
+    <!-- Custom Styling -->
     <link rel="stylesheet" href="mainstyle.css">
 </head>
 
 <body>
     <header>
-    <h1>Welcome, <?php echo htmlspecialchars($_SESSION['first_name']); ?>!</h1>
+    <h1>Welcome, to ProfitPilot <?php echo htmlspecialchars($_SESSION['first_name']); ?>!</h1>
 
     <div id="admin">
         <a href="profile.php" class="button">Profile</a>
@@ -71,21 +73,6 @@
             <button type="submit">Apply</button>
         </form>
 
-        <!-- Project List -->
-        <ul>
-            <?php foreach ($projects as $project): ?>
-                <li>
-                    <strong><?php echo htmlspecialchars($project['project_name']); ?></strong>
-                    <br>
-                    <em>Status:</em> <?php echo htmlspecialchars($project['status']); ?>
-                    <br>
-                    <a href="edit_project.php?project_id=<?php echo urlencode($project['project_id']); ?>">Edit</a>
-                    <a href="delete_project.php?project_id=<?php echo urlencode($project['project_id']); ?>" 
-                    onclick="return confirm('Are you sure you want to delete this project?');">Delete</a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-
         <!-- Add New Project -->
         <a href="add_project.php"  class="button">Add New Project</a>
 
@@ -94,6 +81,27 @@
 
         <!-- View Clients -->
         <a href="view_clients.php"  class="button">View Your Clients</a>
+
+        <!-- Project List -->
+        <div class="project-list">
+            <?php foreach ($projects as $project): ?>
+                <div class="project-card">
+                    <h3 class="project-title"><?php echo htmlspecialchars($project['project_name']); ?></h3>
+                    <p class="project-status">
+                        <strong>Status:</strong> <?php echo htmlspecialchars($project['status']); ?>
+                    </p>
+                    <div class="project-actions">
+                        <a href="edit_project.php?project_id=<?php echo urlencode($project['project_id']); ?>" class="edit-btn">Edit</a>
+                        <a href="delete_project.php?project_id=<?php echo urlencode($project['project_id']); ?>" 
+                        class="delete-btn" 
+                        onclick="return confirm('Are you sure you want to delete this project?');">
+                        Delete
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
 </main>
 
 </body>

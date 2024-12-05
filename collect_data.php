@@ -1,24 +1,25 @@
+<!-- Cierra Bailey-Rice (8998948)
+     Harpreet Kaur (8893116)
+     Gurkamal Singh (9001186) -->
+
 <?php
-session_start();
-require 'db_connection.php';
+    session_start();
+    require 'db_connection.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    die("Access Denied: Please log in.");
-}
+    if (!isset($_SESSION['user_id'])) {
+        die("Access Denied: Please log in.");
+    }
 
-$user_id = $_SESSION['user_id'];
+    $user_id = $_SESSION['user_id'];
 
-// Fetch Clients
-$clients_query = $pdo->prepare("SELECT client_id, client_name FROM Clients");
-$clients_query->execute();
-$clients = $clients_query->fetchAll(PDO::FETCH_ASSOC);
+    $clients_query = $pdo->prepare("SELECT client_id, client_name FROM Clients");
+    $clients_query->execute();
+    $clients = $clients_query->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch Projects
-$projects_query = $pdo->prepare("SELECT * FROM Projects WHERE user_id = :user_id");
-$projects_query->bindParam(':user_id', $user_id);
-$projects_query->execute();
-$projects = $projects_query->fetchAll(PDO::FETCH_ASSOC);
+    $projects_query = $pdo->prepare("SELECT * FROM Projects WHERE user_id = :user_id");
+    $projects_query->bindParam(':user_id', $user_id);
+    $projects_query->execute();
+    $projects = $projects_query->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -27,8 +28,11 @@ $projects = $projects_query->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Collection</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Custom Styling -->
+    <link rel="stylesheet" href="mainstyle.css">
 </head>
+
 <body>
     <h1>Client and Project Management</h1>
     
