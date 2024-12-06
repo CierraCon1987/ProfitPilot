@@ -1,34 +1,16 @@
+<!-- Cierra Bailey-Rice (8998948)
+     Harpreet Kaur (8893116)
+     Gurkamal Singh (9001186) -->
+
 <?php
-// fetch_task_details.php
+    include('db_connection.php');
 
-// Ensure the user is logged in
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(["error" => "User not logged in"]);
-    exit();
-}
-
-include('db_connection.php');
-
-if (isset($_GET['task_id'])) {
-    $task_id = $_GET['task_id'];
-
-    // Fetch the task details from the database
-    $stmt = $pdo->prepare("SELECT total_hours, total_rate FROM tasks WHERE task_id = :task_id AND user_id = :user_id");
-    $stmt->execute([
-        ':task_id' => $task_id,
-        ':user_id' => $_SESSION['user_id']
-    ]);
-
-    $task = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($task) {
-        // Return the task details as a JSON response
-        echo json_encode($task);
+    if (isset($_GET['task_id'])) {
+        $task_id = $_GET['task_id'];
+        $stmt = $pdo->prepare("SELECT hours_worked, hourly_rate FROM tasks WHERE task_id = :task_id");
+        $stmt->execute([':task_id' => $task_id]);
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC));
     } else {
-        echo json_encode(["error" => "Task not found"]);
+        echo json_encode(['error' => 'Invalid task ID.']);
     }
-} else {
-    echo json_encode(["error" => "Task ID not provided"]);
-}
 ?>

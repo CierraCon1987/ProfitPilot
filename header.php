@@ -1,3 +1,7 @@
+<!-- Cierra Bailey-Rice (8998948)
+     Harpreet Kaur (8893116)
+     Gurkamal Singh (9001186) -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +18,7 @@
 
         <header>
             <div id="admin">
-                <h1>ProfitPilot</h1>
+                <img src="pplogo1.png">
                 <div class="buttons">
                     <a href="dashboard.php" class="button">Dashboard</a>
                     <a href="logout.php" class="button">Logout</a>

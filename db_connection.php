@@ -3,18 +3,15 @@
      Gurkamal Singh (9001186) -->
 
 <?php
-
-    $servername = "localhost";
-    $username = "root";
+    $host = "localhost";
+    $user = "root";
     $password = "";
     $dbname = "profitpilot";
 
     try {
-        $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        echo "Connection failed: " . $e->getMessage();
-        die();
+        die("Database connection failed: " . $e->getMessage());
     }
-
 ?>

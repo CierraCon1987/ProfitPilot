@@ -1,58 +1,119 @@
+<!-- Cierra Bailey-Rice (8998948)
+     Harpreet Kaur (8893116)
+     Gurkamal Singh (9001186) -->
+
 <?php
-    session_start();
-    include('db_connection.php');
 
-    $success_message = '';
-    $error = '';
-    $total_hours = '';
-    $total_rate = '';
+session_start();
+include('db_connection.php');
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $task_id = $_POST['task_id'];
-        $total_hours = floatval($_POST['total_hours']);
-        $total_rate = floatval($_POST['total_rate']); 
-        $province = $_POST['province'];
-        
+$success_message = '';
+$error_message = '';
+
+// Default values for task hours, rate, and province
+$task_hours = 0;
+$rate = 0;
+$province_id = "";
+
+// Initialize calculation values
+$total_before_tax = 0;
+$total_tax = 0;
+$total_after_tax = 0;
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    echo '<pre>';
+    print_r($_POST); // This will display the contents of the POST request for debugging
+    echo '</pre>';
+}
+
+// Check if 'project_id' is set in POST and assign it to $project_id
+$project_id = isset($_POST['project_id']) ? $_POST['project_id'] : null;
+if (!$project_id) {
+    $error_message = "Project ID is missing.";
+}
+
+// Fetch Tasks
+try {
+    $taskQuery = $pdo->query("SELECT task_id, task_name FROM tasks"); 
+    $tasks = $taskQuery->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Error fetching tasks: " . $e->getMessage());
+}
+
+// Check if form was submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Retrieve form data
+    $task_hours = isset($_POST['task_hours']) ? $_POST['task_hours'] : 0;
+    $rate = isset($_POST['rate']) ? $_POST['rate'] : 0;
+    $province_id = isset($_POST['province']) ? $_POST['province'] : '';
+    $task_id = isset($_POST['task']) ? $_POST['task'] : '';
+    $project_id = isset($_POST['project_id']) ? $_POST['project_id'] : null;
+   
+    var_dump($_POST);  // Debugging the POST data
+
+    // Validate the inputs (basic checks)
+    if ($task_hours > 0 && $rate > 0 && $province_id != "" && $task_id && $project_id) {
+        // Calculate total before tax
+        $total_before_tax = $task_hours * $rate;
+
+        // Fetch Provinces
+        try {
+            $stmt = $pdo->query("SELECT province_id, province_name FROM provinces");
+            $provinces = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error fetching provinces: " . $e->getMessage();
+            exit();
+        }
+
         // Tax rates for provinces
         $taxRates = [
             'AB' => 0.05, 'BC' => 0.12, 'MB' => 0.13, 'NB' => 0.15, 
             'NL' => 0.15, 'NS' => 0.15, 'NT' => 0.05, 'NU' => 0.05,
             'ON' => 0.13, 'PE' => 0.15, 'QC' => 0.14975, 'SK' => 0.11, 'YT' => 0.05
         ];
-        
-        // Calculation for tax and total amount with tax
-        if ($total_hours && $total_rate && isset($taxRates[$province])) {
-            $taxRate = $taxRates[$province];
-            $taxAmount = $total_hours * $total_rate * $taxRate;
-            $totalAmountWithTax = ($total_hours * $total_rate) + $taxAmount;
+
+        // Validate tax rate for selected province
+        if (isset($taxRates[$province_id])) {
+            $taxRate = $taxRates[$province_id];
+            $total_tax = $total_before_tax * $taxRate;
+            $total_after_tax = $total_before_tax + $total_tax;
+
+            // Insert the calculation into the database
+            try {
+                $stmt = $pdo->prepare("
+                    INSERT INTO calculations (
+                        calc_id, project_id, task_id, total_hours, total_rate, province, tax_rate, total_amount_with_tax
+                    ) VALUES (
+                        UUID(), :project_id, :task_id, :total_hours, :total_rate, :province, :tax_rate, :total_amount_with_tax
+                    )
+                ");
+                $stmt->execute([
+                    ':project_id' => $project_id, // Use $project_id directly
+                    ':task_id' => $task_id,
+                    ':total_hours' => $task_hours,
+                    ':total_rate' => $rate,
+                    ':province' => $province_id,
+                    ':tax_rate' => $taxRate,
+                    ':total_amount_with_tax' => $total_after_tax
+                ]);
+                $success_message = "Calculation added successfully!";
+            } catch (PDOException $e) {
+                $error_message = "Error adding calculation: " . $e->getMessage();
+            }
         } else {
-            echo "Invalid input. Please make sure all fields are filled out correctly.";
-            exit;
+            $error_message = "Invalid province selected.";
         }
-    
-        try {
-            $stmt = $pdo->prepare("INSERT INTO calculations (calc_id, project_id, total_hours, total_rate, total_amount, province, tax_rate, total_amount_with_tax) 
-                VALUES (UUID(), :project_id, :total_hours, :total_rate, :total_amount, :province, :tax_rate, :total_amount_with_tax)");
-            
-            $stmt->execute([
-                ':project_id' => $project_id,
-                ':total_hours' => $total_hours,
-                ':total_rate' => $total_rate,
-                ':total_amount' => $total_hours * $total_rate,
-                ':province' => $province,
-                ':tax_rate' => $taxRate,
-                ':total_amount_with_tax' => $totalAmountWithTax
-            ]);
-    
-            echo "Calculation added successfully!";
-        } catch (PDOException $e) {
-            echo "Error adding calculation: " . $e->getMessage();
-        }
+    } else {
+        $error_message = "Please fill in all fields correctly.";
     }
+}
+
 ?>
 
+
 <?php include('header.php'); ?>
-<h2>Project Calculation</h2>
+
+<h2>Project and Task Calculation</h2>
 <p>Fill out the details below to calculate your projects potential!</p>
 
 <?php if (isset($success_message)): ?>
@@ -62,123 +123,94 @@
     <p class="error"><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>
 
-<!-- Project Selection -->
-<form action="calculation.php" method="POST">
+<!-- Project Dropdown -->
+<form method="POST" action="calculation.php">
     <div>
-        <label for="task_id">Select Task:</label>
-        <select name="task_id" id="task_id" onchange="updateFields()">
-                <option value="">-- Select Task --</option>
-                <?php
-                    $stmt = $pdo->prepare("SELECT task_id, task_description FROM tasks WHERE user_id = :user_id");
-                    $stmt->execute([':user_id' => $_SESSION['user_id']]);
-                    $tasks = $stmt->fetchAll();
-                    
-                    foreach ($tasks as $task) {
-                        echo "<option value='{$task['task_id']}'>{$task['task_description']}</option>";
-                    }
-                ?>
-            </select>
+        <label for="project_id">Select Project:</label>
+        <select id="project_id" name="project_id" onchange="fetchTasks(this.value)">
+            <option value="">-- Select Project --</option>
+            <?php
+            $stmt = $pdo->query("SELECT project_id, project_name FROM projects");
+            while ($row = $stmt->fetch()) {
+                echo "<option value='{$row['project_id']}'>{$row['project_name']}</option>";
+            }
+            ?>
+        </select>
     </div>
 
+    <!-- Task Dropdown -->
     <div>
-        <label for="total_hours">Hours Worked:</label>
-        <input type="number" name="total_hours" id="total_hours" value="5" required>
-    </div>
-
-    <div>
-        <label for="total_rate">Hourly Rate:</label>
-        <input type="number" name="total_rate" id="total_rate" value="50" required>
-    </div>
-
-    <div>
-        <label for="province">Select Province:</label>
-        <select name="province" id="province">
-        <option value="">Select Province</option>
-        <option value="AB">Alberta</option>
-        <option value="BC">British Columbia</option>
-        <option value="MB">Manitoba</option>
-        <option value="NB">New Brunswick</option>
-        <option value="NL">Newfoundland and Labrador</option>
-        <option value="NS">Nova Scotia</option>
-        <option value="NT">Northwest Territories</option>
-        <option value="NU">Nunavut</option>
-        <option value="ON">Ontario</option>
-        <option value="PE">Prince Edward Island</option>
-        <option value="QC">Quebec</option>
-        <option value="SK">Saskatchewan</option>
-        <option value="YT">Yukon</option>
+        <label for="task">Task:</label>
+        <select id="task" name="task">
+            <option value="">Select a Task</option>
+            <?php
+            foreach ($tasks as $task) {
+                echo "<option value='{$task['task_id']}'>{$task['task_name']}</option>";
+            }
+            ?>
         </select>
     </div>
 
     <div>
-        <label for="total_amount">Total Amount (Before Tax):</label>
-        <input type="text" id="total_amount" value="0" disabled>
+        <label for="task_hours">Task Hours:</label>
+        <input type="number" name="task_hours" id="task_hours" required>
+    </div>
+    <div>
+        <label for="rate">Rate:</label>
+        <input type="number" name="rate" id="rate" required>
     </div>
 
+    <!-- Province Dropdown -->
     <div>
-        <label for="tax_rate">Tax Rate:</label>
-        <input type="text" id="tax_rate" value="0%" disabled>
+        <label for="province">Province:</label>
+        <select name="province" id="province" required>
+            <?php foreach ($provinces as $province): ?>
+                <option value="<?= $province['province_id'] ?>"><?= $province['province_name'] ?></option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
-    <div>
-        <label for="total_amount_with_tax">Total Amount (With Tax):</label>
-        <input type="text" id="total_amount_with_tax" value="0" disabled>
-    </div>
+    
 
     <button type="submit">Calculate</button>
+
+    <?php if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($error_message)): ?>
+    <div class="calculation-breakdown">
+        <h2>Calculation Breakdown</h2>
+        <p><strong>Task Hours:</strong> <?php echo $task_hours; ?> hours</p>
+        <p><strong>Rate per Hour:</strong> $<?php echo number_format($rate, 2); ?></p>
+        <p><strong>Province Tax Rate:</strong> <?php echo number_format($tax_rate * 100, 2); ?>%</p>
+        <p><strong>Tax Amount:</strong> $<?php echo number_format($total_tax, 2); ?></p>
+        <p><strong>Total Before Tax:</strong> $<?php echo number_format($total_before_tax, 2); ?></p>
+        <p><strong>Total After Tax:</strong> $<?php echo number_format($total_after_tax, 2); ?></p>
+        <p><strong>Formula Used:</strong> (Task Hours * Rate per Hour) + (Task Hours * Rate per Hour * Tax Rate)</p>
+    </div>
+<?php elseif (isset($error_message)): ?>
+    <p style="color: red;"><?php echo $error_message; ?></p>
+<?php endif; ?>
+
 </form>
 
-<!-- Display Calculated Total Amount -->
-<?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-    <div class="calculation">
-        <h3>Calculated Total Amount</h3>
-        <p><strong>Total Amount: $</strong><?= number_format($total_hours * $total_rate, 2) ?></p>
-        <p><strong>Tax Rate: </strong><?= (isset($taxRate) ? $taxRate * 100 : 0) ?>%</p>
-        <p><strong>Total Amount with Tax: $</strong><?= number_format($totalAmountWithTax, 2) ?></p>
-    </div>
-    <?php endif; ?>
+<script>
+async function fetchTasks(projectId) {
+    const response = await fetch(`fetch_tasks.php?project_id=${projectId}`);
+    const tasks = await response.json();
+    const taskSelect = document.getElementById('task_id');
+    taskSelect.innerHTML = '<option value="">-- Select Task --</option>';
+    tasks.forEach(task => {
+        const option = document.createElement('option');
+        option.value = task.task_id;
+        option.textContent = task.task_name;
+        taskSelect.appendChild(option);
+    });
+}
+
+async function fetchTaskDetails(taskId) {
+    const response = await fetch(`fetch_task_details.php?task_id=${taskId}`);
+    const taskDetails = await response.json();
+    document.getElementById('total_hours').value = taskDetails.hours_worked;
+    document.getElementById('total_rate').value = taskDetails.hourly_rate;
+}
+</script>
 
 <?php include('footer.php'); ?>
-
-<script>
-    function updateFields() {
-        var taskSelect = document.getElementById("task_id");
-        var selectedTask = taskSelect.options[taskSelect.selectedIndex];
-        var hours = selectedTask.getAttribute("data-hours");
-        var rate = selectedTask.getAttribute("data-rate");
-
-        // Update the form fields with the selected task's values
-        document.getElementById("total_hours").value = hours;
-        document.getElementById("total_rate").value = rate;
-
-        updateCalculation();  // Recalculate totals based on the new values
-    }
-
-    function updateCalculation() {
-        var hours = parseFloat(document.getElementById("total_hours").value);
-        var rate = parseFloat(document.getElementById("total_rate").value);
-        var provinceSelect = document.getElementById("province");
-        var province = provinceSelect.value;
-
-        var taxRates = {
-            'AB': 0.05, 'BC': 0.12, 'MB': 0.13, 'NB': 0.15, 
-            'NL': 0.15, 'NS': 0.15, 'NT': 0.05, 'NU': 0.05,
-            'ON': 0.13, 'PE': 0.15, 'QC': 0.14975, 'SK': 0.11, 'YT': 0.05
-        };
-
-        if (taxRates[province]) {
-            var taxRate = taxRates[province];
-            var totalBeforeTax = hours * rate;
-            var taxAmount = totalBeforeTax * taxRate;
-            var totalWithTax = totalBeforeTax + taxAmount;
-
-            // Update the form fields with the calculated values
-            document.getElementById("total_amount").value = totalBeforeTax.toFixed(2);
-            document.getElementById("tax_rate").value = (taxRate * 100).toFixed(2) + '%';
-            document.getElementById("total_amount_with_tax").value = totalWithTax.toFixed(2);
-        }
-    }
-
-    // Initial call to set values based on the default task
-    updateFields();
-</script>
