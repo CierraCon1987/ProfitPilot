@@ -34,17 +34,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProfitPilot | Login</title>
+    <title>ProfitPilot | Profile</title>
 
     <!-- Custom Styling -->
     <link rel="stylesheet" href="mainstyle.css">
 </head>
 
-<header>
-        <h1>ProfitPilot</h1>
-        <a href="dashboard.php">Back to Dashboard</a>
-        <a href="logout.php" class="button">Logout</a>
-    </header>
+<body>
+    <main>
+
+        <header>
+            <div id="admin">
+                <h1>ProfitPilot</h1>
+            </div>
+        </header>
 
     <h2>Login</h2>
 
@@ -64,6 +67,8 @@
     </form>
 
     <p>Don't have an account? <a href="register.php" class="button">Register here</a></p>
+
+    <?php include('footer.php'); ?>
 
 </body>
 </html>

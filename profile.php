@@ -61,29 +61,8 @@
 ?>
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProfitPilot | Profile</title>
+<?php include('header.php'); ?>
 
-    <!-- Custom Styling -->
-    <link rel="stylesheet" href="mainstyle.css">
-</head>
-
-<body>
-    <main>
-
-        <header>
-            <div id="admin">
-                <h1>ProfitPilot</h1>
-                <div class="buttons">
-                    <a href="dashboard.php" class="button">Dashboard</a>
-                    <a href="logout.php" class="button">Logout</a>
-                </div>
-            </div>
-        </header>
 
         <h2>Your Account Information</h2>
         <p>Update Your Account Information</p>
@@ -115,6 +94,7 @@
             <button type="submit">Update Profile</button>
         </form>
 </main>
+<?php include('footer.php'); ?>
 
 </body>
 </html>

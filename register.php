@@ -6,9 +6,9 @@
 
     include('db_connection.php');
 
+    $error = ''; 
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $first_name = htmlspecialchars($_POST['first_name']);
-        $last_name = htmlspecialchars($_POST['last_name']);
         $username = htmlspecialchars($_POST['username']);
         $email = htmlspecialchars($_POST['email']);
         $password = $_POST['password'];
@@ -25,13 +25,14 @@
             $error = "Email or username already exists!";
         }
     
-        if (!isset($error)) {
+        // If no errors, proceed to register the user
+        if (empty($error)) {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $user_id = uniqid('USER-');
+            $user_id = strtoupper(uniqid('USR'));
     
             try {
-                $stmt = $pdo->prepare("INSERT INTO Users (user_id, first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$user_id, $first_name, $last_name, $username, $email, $hashedPassword]);
+                $stmt = $pdo->prepare("INSERT INTO Users (user_id, username, email, password) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$user_id, $username, $email, $hashedPassword]);
                 header("Location: login.php");
                 exit();
             } catch (PDOException $e) {
@@ -39,7 +40,6 @@
             }
         }
     }
-
 ?>
 
 
@@ -59,30 +59,22 @@
         <h2>Create an Account</h2>
     </header>
 
-    <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
+    <!-- Registration Form -->
+    <?php if ($error): ?>
+        <div class="error"><?php echo $error; ?></div>
+    <?php endif; ?>
 
-    <form action="register.php" method="POST">
-        <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name">
-        <br>
-
-        <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name">
-        <br>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email">
-        <br>
-
+    <form method="POST" action="">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username">
-        <br>
+        <input type="text" name="username" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" required><br>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" >
-        <br>
+        <input type="password" name="password" required><br>
 
-        <input type="submit" value="Register">
+        <button type="submit">Register</button>
     </form>
 
     <p>Already have an account? <a href="login.php" class="button">Login here</a></p>
