@@ -30,7 +30,7 @@
         <a href="add_task.php"  class="button">Add New Task</a>
 
         <!-- View Calculation -->
-        <a href="calculation.php"  class="button">Add a Calculation</a>
+        <a href="calculation.php"  class="button">Calculate</a>
 
         <!-- Project List -->
         <div class="project-list">
