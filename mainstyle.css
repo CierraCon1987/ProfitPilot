@@ -396,6 +396,31 @@ p{
     background-color: #a71d2a;
 }
 
+li{
+    color: #003366;
+    list-style: none;
+}
+
+.input-style {
+    width: 100%; /* Full-width */
+    padding: 10px; /* Adjust padding for better spacing */
+    font-size: 16px; /* Match the input font size */
+    border: 1px solid #ccc; /* Same border as input */
+    border-radius: 4px; /* Rounded corners for consistency */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+.input-style:focus {
+    border-color: #007bff; /* Add a highlight on focus (optional) */
+    outline: none; /* Remove default focus outline */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px; /* Add spacing between label and input */
+    font-weight: bold; /* Optional: make label text bold */
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {

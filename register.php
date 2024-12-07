@@ -78,6 +78,6 @@
     </form>
 
     <p>Already have an account? <a href="login.php" class="button">Login here</a></p>
-
+    <?php include('footer.php'); ?>
 </body>
 </html>

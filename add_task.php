@@ -20,6 +20,20 @@
 
     $project_id = $_GET['project_id'];
 
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM projects WHERE project_id = ? AND user_id = ?");
+        $stmt->execute([$project_id, $user_id]);
+        $project = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$project) {
+            // If no project found, redirect to dashboard
+            header("Location: dashboard.php");
+            exit();
+        }
+    } catch (PDOException $e) {
+        $error = "Error checking project: " . $e->getMessage();
+    }
+
     function generateCustomID($prefix = 'TAS') {
         return strtoupper(uniqid($prefix));  
     }

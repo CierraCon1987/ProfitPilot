@@ -26,9 +26,6 @@
         <!-- Add New Project -->
         <a href="add_project.php"  class="button">Add New Project</a>
 
-        <!-- Add New Task -->
-        <a href="add_task.php"  class="button">Add New Task</a>
-
         <!-- View Calculation -->
         <a href="calculation.php"  class="button">Calculate</a>
 
@@ -43,13 +40,38 @@
                             <p class="project-status">
                                 <strong>Status:</strong> <?php echo htmlspecialchars($project['status']); ?>
                             </p>
+
+<!-- Fetch and Display Tasks for the Current Project -->
+<div class="task-list">
+    <?php
+        $project_id = $project['project_id'];
+        // Query to fetch tasks for the current project
+        $stmt = $pdo->prepare("SELECT task_name FROM Tasks WHERE project_id = ? ORDER BY task_name ASC");
+        $stmt->execute([$project_id]);
+        $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($tasks)): ?>
+            <p style=color:#0056b3;>No tasks added yet.</p>
+        <?php else: ?>
+            <ul>
+                <?php foreach ($tasks as $task): ?>
+                    <li> 
+                        <?php echo htmlspecialchars($task['task_name']); ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+</div>
+
+
                             <div class="project-actions">
-                                <a href="add_task.php?project_id=<?php echo urlencode($project['project_id']); ?>" class="edit-btn">Edit</a>
+                                <a href="edit_project.php?project_id=<?php echo urlencode($project['project_id']); ?>" class="edit-btn">Edit</a>
                                 <a href="delete_project.php?project_id=<?php echo urlencode($project['project_id']); ?>" 
                                 class="delete-btn" 
                                 onclick="return confirm('Are you sure you want to delete this project?');">
                                     Delete
                                 </a>
+                                 <a href="add_task.php?project_id=<?php echo urlencode($project['project_id']); ?>" class="button">Add Task</a>
                             </div>
                         </div>
                     <?php endforeach; ?>
