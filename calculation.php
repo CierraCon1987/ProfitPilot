@@ -16,6 +16,7 @@ $total_tax = 0;
 $total_after_tax = 0;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $action = $_POST['action'] ?? '';
     // Fetch form data
     $project_id = $_POST['project_id'];  // Already a string, keep it as is
     $task_id = $_POST['task'];  // Already a string, keep it as is
@@ -28,40 +29,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'NL' => 0.15, 'NS' => 0.15, 'NT' => 0.05, 'NU' => 0.05,
         'ON' => 0.13, 'PE' => 0.15, 'QC' => 0.14975, 'SK' => 0.11, 'YT' => 0.05
     ];
-    // Perform calculations
-    $total_rate = $rate * $task_hours;
-    $taxRate = 0.13;  // Example: Assuming a 13% tax rate
-    $total_after_tax = $total_rate + ($total_rate * $taxRate);
-
+    $taxRate = isset($province_tax_rates[$province_id]) ? $province_tax_rates[$province_id] : 0;
+    
     // Prepare and execute the insert query
     try {
-        $stmt = $pdo->prepare("
-            INSERT INTO calculations (
-                calc_id, project_id, task_id, total_hours, total_rate, total_amount,province, tax_rate, total_amount_with_tax
-            ) VALUES (
-                UUID(), :project_id, :task_id, :total_hours, :total_rate, :total_amount,:province, :tax_rate, :total_amount_with_tax
-            )
-        ");
-        $stmt->execute([
-            ':project_id' => $project_id,
-            ':task_id' => $task_id,
-            ':total_hours' => $task_hours,
-            ':total_rate' => $total_rate,
-            ':total_amount' => $task_hours *$total_rate,
-            ':province' => $province_id,
-            ':tax_rate' => $taxRate,
-            ':total_amount_with_tax' => $total_after_tax
-        ]);
+        $stmt = $pdo->prepare("SELECT hourly_rate FROM tasks WHERE task_id = :task_id");
+        $stmt->execute([':task_id' => $task_id]);
+        $task = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Check for success
-        if ($stmt->rowCount() > 0) {
-            $success_message = "Calculation added successfully!";
+        if ($task) {
+            $hourly_rate = (float) $task['hourly_rate'];
+
+            // Calculate total rate and total amount
+            $total_rate = $hourly_rate;
+            $total_amount = $total_rate * $task_hours;
+            $total_after_tax = $total_amount + ($total_amount * $taxRate);
+
+            // Insert into the calculations table
+            $stmt = $pdo->prepare("
+                INSERT INTO calculations (
+                    calc_id, project_id, task_id, total_hours, total_rate, total_amount, province, tax_rate, total_amount_with_tax
+                ) VALUES (
+                    UUID(), :project_id, :task_id, :total_hours, :total_rate, :total_amount, :province, :tax_rate, :total_amount_with_tax
+                )
+            ");
+            $stmt->execute([
+                ':project_id' => $project_id,
+                ':task_id' => $task_id,
+                ':total_hours' => $task_hours,
+                ':total_rate' => $total_rate,
+                ':total_amount' => $total_amount,
+                ':province' => $province_id,
+                ':tax_rate' => $taxRate,
+                ':total_amount_with_tax' => $total_after_tax
+            ]);
+
+            if ($stmt->rowCount() > 0) {
+                $success_message = "Calculation added successfully!";
+            } else {
+                $error_message = "Failed to add calculation to the database.";
+            }
         } else {
-            $error_message = "Failed to add calculation to the database.";
+            $error_message = "Task not found. Please select a valid task.";
         }
-
     } catch (PDOException $e) {
-        $error_message = "Error adding calculation: " . $e->getMessage();
+        $error_message = "Error fetching hourly rate: " . $e->getMessage();
     }
 }
 
@@ -102,6 +114,8 @@ try {
 
 <!-- Project Dropdown -->
 <form method="POST" action="calculation.php">
+     <input type="hidden" name="action" value="calculate"> <!-- Add this hidden field -->
+
     <div>
         <label for="project_id">Select Project:</label>
         <select id="project_id" name="project_id" onchange="fetchTasks(this.value)" required class="input-style">
@@ -149,7 +163,7 @@ try {
     </div>
     <input type="hidden" id="tax_rate" name="tax_rate">
 
-    <button type="submit">Calculate</button>
+    <button type="submit class="button" >Calculate</button>
             </form>
             <script>
     // Hide success message after 5 seconds

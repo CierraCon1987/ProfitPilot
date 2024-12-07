@@ -19,11 +19,13 @@
         $project_name = $_POST['project_name'];
         $client_name = $_POST['client_name'];
         $start_date = $_POST['start_date'];
+        $end_date=$_POST['end_date'];
         $status = $_POST['status'];
         
     try {
-        $stmt = $pdo->prepare("INSERT INTO Projects (project_id, user_id, project_name, status) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$project_id, $user_id, $project_name, $status]);
+        $stmt = $pdo->prepare("INSERT INTO Projects (project_id, user_id, project_name, client_name, start_date, end_date, status) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$project_id, $user_id, $project_name, $client_name, $start_date, $end_date, $status]);
 
         header("Location: dashboard.php");
         exit();
@@ -46,6 +48,9 @@
 
     <label for="start_date">Start Date:</label>
     <input type="date" id="start_date" name="start_date" required><br>
+
+    <label for="end_date">End Date:</label>
+    <input type="date" id="end_date" name="end_date" required><br>
 
     <label for="status">Status:</label>
     <select id="status" name="status">

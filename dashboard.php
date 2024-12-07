@@ -32,7 +32,7 @@
         <!-- Project List -->
         <div class="project-list">
                 <?php if (empty($projects)): ?>
-                    <p>No projects found. <a href="add_project.php">Start a new project now</a>.</p>
+                    <p>No projects found. <a href="add_project.php" class ="button">Start a new project now</a>.</p>
                 <?php else: ?>
                     <?php foreach ($projects as $project): ?>
                         <div class="project-card">
