@@ -41,11 +41,10 @@
                                 <strong>Status:</strong> <?php echo htmlspecialchars($project['status']); ?>
                             </p>
 
-<!-- Fetch and Display Tasks for the Current Project -->
+<!-- Get and Display Tasks for the Current Project -->
 <div class="task-list">
     <?php
         $project_id = $project['project_id'];
-        // Query to fetch tasks for the current project
         $stmt = $pdo->prepare("SELECT task_name FROM Tasks WHERE project_id = ? ORDER BY task_name ASC");
         $stmt->execute([$project_id]);
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -80,5 +79,4 @@
 
 </main>
 <?php include('footer.php'); ?>
-</body>
-</html>
+

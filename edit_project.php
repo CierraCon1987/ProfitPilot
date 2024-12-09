@@ -1,83 +1,82 @@
 <?php
-session_start();
-include('db_connection.php');
+    session_start();
+    include('db_connection.php');
 
-$success_message = '';
-$error_message = '';
+    $success_message = '';
+    $error_message = '';
 
-// Check if project ID is provided
-if (!isset($_GET['project_id'])) {
-    die("Project ID is required.");
-}
-
-$project_id = $_GET['project_id'];
-
-// Fetch project details
-try {
-    $stmt = $pdo->prepare("SELECT * FROM projects WHERE project_id = :project_id");
-    $stmt->execute([':project_id' => $project_id]);
-    $project = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$project) {
-        die("Project not found.");
+    // Check for ProjectID
+    if (!isset($_GET['project_id'])) {
+        die("Project ID is required.");
     }
-} catch (PDOException $e) {
-    die("Error fetching project details: " . $e->getMessage());
-}
 
-// Fetch tasks for the project
-$tasks = [];
-try {
-    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE project_id = :project_id");
-    $stmt->execute([':project_id' => $project_id]);
-    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Error fetching tasks: " . $e->getMessage());
-}
+    $project_id = $_GET['project_id'];
 
-// Update project details
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Retrieve form inputs
-    $project_name = $_POST['project_name'];
-    $client_name = $_POST['client_name'];
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
-    $status = $_POST['status'];
-
+    // Get project details
     try {
-        $stmt = $pdo->prepare("
-            UPDATE projects
-            SET project_name = :project_name,
-                client_name = :client_name,
-                start_date = :start_date,
-                end_date = :end_date,
-                status = :status
-            WHERE project_id = :project_id
-        ");
-        $stmt->execute([
-            ':project_name' => $project_name,
-            ':client_name' => $client_name,
-            ':start_date' => $start_date,
-            ':end_date' => $end_date,
-            ':status' => $status,
-            ':project_id' => $project_id
-        ]);
+        $stmt = $pdo->prepare("SELECT * FROM projects WHERE project_id = :project_id");
+        $stmt->execute([':project_id' => $project_id]);
+        $project = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($stmt->rowCount() > 0) {
-            $success_message = "Project updated successfully!";
-            // Refresh project details
-            $project['project_name'] = $project_name;
-            $project['client_name'] = $client_name;
-            $project['start_date'] = $start_date;
-            $project['end_date'] = $end_date;
-            $project['status'] = $status;
-        } else {
-            $error_message = "No changes made.";
+        if (!$project) {
+            die("Project not found.");
         }
     } catch (PDOException $e) {
-        $error_message = "Error updating project: " . $e->getMessage();
+        die("Error fetching project details: " . $e->getMessage());
     }
-}
+
+    // Get tasks for the project
+    $tasks = [];
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM tasks WHERE project_id = :project_id");
+        $stmt->execute([':project_id' => $project_id]);
+        $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        die("Error fetching tasks: " . $e->getMessage());
+    }
+
+    // Update project details
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $project_name = $_POST['project_name'];
+        $client_name = $_POST['client_name'];
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
+        $status = $_POST['status'];
+
+        try {
+            $stmt = $pdo->prepare("
+                UPDATE projects
+                SET project_name = :project_name,
+                    client_name = :client_name,
+                    start_date = :start_date,
+                    end_date = :end_date,
+                    status = :status
+                WHERE project_id = :project_id
+            ");
+            $stmt->execute([
+                ':project_name' => $project_name,
+                ':client_name' => $client_name,
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':status' => $status,
+                ':project_id' => $project_id
+            ]);
+
+            if ($stmt->rowCount() > 0) {
+                $success_message = "Project updated successfully!";
+                // Refresh project details
+                $project['project_name'] = $project_name;
+                $project['client_name'] = $client_name;
+                $project['start_date'] = $start_date;
+                $project['end_date'] = $end_date;
+                $project['status'] = $status;
+            } else {
+                $error_message = "No changes made.";
+            }
+        } catch (PDOException $e) {
+            $error_message = "Error updating project: " . $e->getMessage();
+        }
+    }
 ?>
 
 <?php include('header.php'); ?>

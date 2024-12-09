@@ -69,6 +69,3 @@
     <p>Don't have an account? <a href="register.php" class="button">Register here</a></p>
 
     <?php include('footer.php'); ?>
-
-</body>
-</html>

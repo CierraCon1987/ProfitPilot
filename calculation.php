@@ -187,17 +187,13 @@
 
                     // JSON response
                     const tasks = await response.json();
-
-                    // Get the task dropdown element
                     const taskSelect = document.getElementById('task');
 
-                    // Clear existing tasks (to avoid appending old data)
                     taskSelect.innerHTML = '<option value="">Select Task</option>';
 
                     // Check if tasks are returned
                     if (tasks.length > 0) {
                         tasks.forEach(task => {
-                            // Create new option element for each task
                             const option = document.createElement('option');
                             option.value = task.task_id;
                             option.textContent = task.task_name;
