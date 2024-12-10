@@ -30,53 +30,53 @@
         exit();
     }
     
- // Fetch full details of a selected calculation
-if (isset($_GET['calc_id'])) {
-    $calc_id = $_GET['calc_id'];
-    
-    try {
-        $stmt = $pdo->prepare("
-            SELECT 
-                c.calc_id, 
-                c.total_hours, 
-                c.total_rate, 
-                c.total_amount, 
-                c.total_amount_with_tax,
-                t.task_name, 
-                p.project_name, 
-                p.start_date, 
-                p.end_date, 
-                p.status,
-                t.created_at
-            FROM calculations c
-            JOIN tasks t ON c.task_id = t.task_id
-            JOIN projects p ON c.project_id = p.project_id
-            WHERE c.calc_id = :calc_id
-        ");
-        $stmt->execute([':calc_id' => $calc_id]);
-        $calculation_details = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Fetch full details of a selected calculation
+    if (isset($_GET['calc_id'])) {
+        $calc_id = $_GET['calc_id'];
         
-        if ($calculation_details) {
-            $calculation_breakdown = "
-                <h3>Calculation Breakdown (ID: {$calculation_details['calc_id']})</h3>
-                <p><strong>Task Name:</strong> {$calculation_details['task_name']}</p>
-                <p><strong>Project Name:</strong> {$calculation_details['project_name']}</p>
-                <p><strong>Project Start Date:</strong> {$calculation_details['start_date']}</p>
-                <p><strong>Project End Date:</strong> {$calculation_details['end_date']}</p>
-                <p><strong>Project Status:</strong> {$calculation_details['status']}</p>
-                <p><strong>Task Creation Date:</strong> {$calculation_details['created_at']}</p>
-                <p><strong>Hours Worked:</strong> {$calculation_details['total_hours']}</p>
-                <p><strong>Rate per Hour:</strong> \${$calculation_details['total_rate']}</p>
-                <p><strong>Total Before Tax:</strong> \${$calculation_details['total_amount']}</p>
-                <p><strong>Total (With Tax):</strong> \${$calculation_details['total_amount_with_tax']}</p>
-            ";
-        } else {
-            $calculation_breakdown = "<p>Calculation not found.</p>";
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    c.calc_id, 
+                    c.total_hours, 
+                    c.total_rate, 
+                    c.total_amount, 
+                    c.total_amount_with_tax,
+                    t.task_name, 
+                    p.project_name, 
+                    p.start_date, 
+                    p.end_date, 
+                    p.status,
+                    t.created_at
+                FROM calculations c
+                JOIN tasks t ON c.task_id = t.task_id
+                JOIN projects p ON c.project_id = p.project_id
+                WHERE c.calc_id = :calc_id
+            ");
+            $stmt->execute([':calc_id' => $calc_id]);
+            $calculation_details = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($calculation_details) {
+                $calculation_breakdown = "
+                    <h3>Calculation Breakdown (ID: {$calculation_details['calc_id']})</h3>
+                    <p><strong>Task Name:</strong> {$calculation_details['task_name']}</p>
+                    <p><strong>Project Name:</strong> {$calculation_details['project_name']}</p>
+                    <p><strong>Project Start Date:</strong> {$calculation_details['start_date']}</p>
+                    <p><strong>Project End Date:</strong> {$calculation_details['end_date']}</p>
+                    <p><strong>Project Status:</strong> {$calculation_details['status']}</p>
+                    <p><strong>Task Creation Date:</strong> {$calculation_details['created_at']}</p>
+                    <p><strong>Hours Worked:</strong> {$calculation_details['total_hours']}</p>
+                    <p><strong>Rate per Hour:</strong> \${$calculation_details['total_rate']}</p>
+                    <p><strong>Total Before Tax:</strong> \${$calculation_details['total_amount']}</p>
+                    <p><strong>Total (With Tax):</strong> \${$calculation_details['total_amount_with_tax']}</p>
+                ";
+            } else {
+                $calculation_breakdown = "<p>Calculation not found.</p>";
+            }
+        } catch (PDOException $e) {
+            $calculation_breakdown = "Error fetching calculation details: " . $e->getMessage();
         }
-    } catch (PDOException $e) {
-        $calculation_breakdown = "Error fetching calculation details: " . $e->getMessage();
-    }
-}   
+    }   
 ?>
 
 <?php include('header.php'); ?>

@@ -2,7 +2,7 @@
      Harpreet Kaur (8893116)
      Gurkamal Singh (9001186) -->
 
-     <?php
+<?php
         include('db_connection.php');
         session_start();
 
@@ -63,7 +63,6 @@
 
 <?php include('header.php'); ?>
 
-
         <h2>Your Account Information</h2>
         <p>Update Your Account Information</p>
 
@@ -95,6 +94,3 @@
         </form>
 </main>
 <?php include('footer.php'); ?>
-
-</body>
-</html>

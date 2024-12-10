@@ -3,7 +3,6 @@
      Gurkamal Singh (9001186) -->
 
 <?php
-
     include('db_connection.php');
 
     $error = ''; 
@@ -78,6 +77,6 @@
     </form>
 
     <p>Already have an account? <a href="login.php" class="button">Login here</a></p>
+
     <?php include('footer.php'); ?>
-</body>
-</html>
+
