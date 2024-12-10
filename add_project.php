@@ -27,7 +27,7 @@
                                VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$project_id, $user_id, $project_name, $client_name, $start_date, $end_date, $status]);
 
-        header("Location: dashboard.php");
+        header("Location: dashboard.php"); //newly added project will display on dashboard
         exit();
     } catch (PDOException $e) {
         $error = "Error adding project: " . $e->getMessage();

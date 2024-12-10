@@ -55,7 +55,7 @@ a:hover {
 
 /* Header styling */
 header {
-    background-color: #003366;
+    background-color: #660000;
     color: #fff;
     padding: 20px 0;
     text-align: center;
@@ -236,6 +236,7 @@ p {
 
 .dashboard .card {
     background-color: #fff;
+  
     padding: 20px;
     width: 30%;
     border-radius: 10px;
@@ -287,7 +288,7 @@ p {
 
 .project-card {
     background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    border:2px solid #0056b3;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 100px;

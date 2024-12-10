@@ -35,6 +35,7 @@
             $taxRate = $province_tax_rates[$province_id] ?? 0;
 
             try {
+                //fetching hourly rate from tasks table
                 $stmt = $pdo->prepare("SELECT hourly_rate FROM tasks WHERE task_id = :task_id");
                 $stmt->execute([':task_id' => $task_id]);
                 $task = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -46,7 +47,7 @@
                     $total_tax = $total_amount * $taxRate;
                     $total_after_tax = $total_amount + $total_tax;
 
-                    // Insert into the calculations table
+                    // Insert total calculations into the calculations table
                     $stmt = $pdo->prepare("
                         INSERT INTO calculations (
                             calc_id, project_id, task_id, total_hours, total_rate, total_amount, province, tax_rate, total_amount_with_tax
@@ -126,6 +127,7 @@
         </div>
 
     <!-- Task Dropdown -->
+     <!--task will be fetched from the project selected-->
     <div class="cal-form">
         <label for="task">Task:</label>
         <select id="task" name="task" required onchange="fetchTaskDetails(this.value)" class="input-style">
@@ -134,6 +136,7 @@
     </div>
 
     <!-- Task Hours Section -->
+      <!-- Task Hours fetched from tasks table according to task selected -->
     <div class="cal-form">
         <label for="task_hours">Task Hours:</label>
         <input type="number" name="task_hours" id="task_hours" required>
@@ -165,6 +168,7 @@
 
 
 <!-- JS Section -->
+ <!-- sucess and error message will be disappear after 10 seconds -->
     <script>
         setTimeout(() => {
             const successMessage = document.getElementById('success-message');
@@ -172,10 +176,11 @@
             
             const errorMessage = document.getElementById('error-message');
             if (errorMessage) errorMessage.style.display = 'none';
-        }, 5000);
+        }, 10000);
     </script>
 
     <script>
+        //fetching tasks from task table that associated to a project
         async function fetchTasks(projectId) {
             // Check if projectId is selected
             if (projectId) {

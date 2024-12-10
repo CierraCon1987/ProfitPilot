@@ -19,7 +19,7 @@ try {
     $stmt = $pdo->prepare("DELETE FROM projects WHERE project_id = :project_id");
     $stmt->execute([':project_id' => $project_id]);
 
-    // Redirect back to the dashboard after successful deletion
+    // back to the dashboard after successful deletion
     header("Location: dashboard.php");
     exit();
 } catch (PDOException $e) {
