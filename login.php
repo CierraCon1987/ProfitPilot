@@ -56,11 +56,11 @@
 
     <form action="login.php" method="POST">
         <label for="email_or_username">Email or Username:</label>
-        <input type="text" id="email_or_username" name="email_or_username" required>
+        <input type="text" id="email_or_username" name="email_or_username" >
         <br>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password">
         <br>
 
         <input type="submit" value="Login">
